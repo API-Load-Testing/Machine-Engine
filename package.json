@@ -1,0 +1,23 @@
+{
+  "name": "machine-engine",
+  "version": "0.0.1",
+  "description": "its the core, creates VUEs, connects the accounting and analysis data gathering routines and runs a few thousands of VUEs on the machine",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/API-Load-Testing/Machine-Engine.git"
+  },
+  "author": "Hassan Eslaminezhad (Salari)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/API-Load-Testing/Machine-Engine/issues"
+  },
+  "homepage": "https://github.com/API-Load-Testing/Machine-Engine#readme",
+  "dependencies": {
+    "lodash": "^4.13.1",
+    "virtual-user-engine": "^0.6.5"
+  }
+}

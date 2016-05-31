@@ -1,0 +1,25 @@
+{
+    "sourceFileName": "libraryTemplate.js",
+    "maxConcurrentVirtualUsers": 500,
+    "runCycleType": 0,
+
+    "requireOptions": {
+
+        "allowExternalModules": true,
+        "onBeforeRequire": [],
+        "onRequire": [],
+        "onAfterRequire": [],
+        "Blacklist": [],
+        "pathList": []
+    },
+
+    "requestOptions": {
+
+        "timeout": 30000,
+        "onBeforeRequest": [],
+        "onRequest": [],
+        "onResponse": []
+    },
+
+    "timeout": 120000
+}

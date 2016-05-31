@@ -1,0 +1,65 @@
+// This is a template, any available option will be used
+// for Methods use method_Name as string, and provide the
+// method code in the library.js file
+{
+    // The js file containing the methods code
+    // Methods must be Exported as module.exports
+    "sourceFileName": "",
+
+    // The unsafe user script to run
+    "userScriptFileName": "",
+
+    // max Number of created virtual users that will run simultaniously at each cycle
+    "maxConcurrentVirtualUsers": 500,
+    // 0 = contituous-No Cycles,  1 = new cycle after the last VU ends, 2=only run once
+    "runCycleType": 0,
+
+
+    "ControlMethods": [
+        {
+            // These methods will run automaticlly every runPeriod miliseconds,
+            // this is usefull for logging out of time requests, or time
+            // based accounting operations
+            // if runCycleType = 1 then runPeriod = -1 will run methods at start of each cycle
+            "runPeriod": 60000,
+            "Methods": []
+        }
+        //you can have multiple type of controlMethods, each group with different runPeriod
+    ],
+
+    "requireOptions": {
+
+        "useCopy": false,
+        "reload": false,
+        "allowExternalModules": true,
+        "onBeforeRequire": [],
+        "onRequire": [],
+        "onAfterRequire": [],
+        "Blacklist": [],
+        "Whitelist": [],
+        "extentionList": {
+            //"Extension": Method
+        },
+        "pathList": [],
+        "overrideList": {
+            // "ModuleName": Method
+        }
+    },
+
+    "requestOptions": {
+
+        "timeout": 120000,
+        "onBeforeRequest": [],
+        "onRequest": [],
+        "onResponse": [],
+        "Blacklist": [],
+        "Whitelist": []
+    },
+
+    "timeout": 900000,
+
+    "contextVariables": {
+        //Global Variables for userScript,
+        // Like Remainig Credit
+    }
+}
