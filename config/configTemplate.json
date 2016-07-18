@@ -9,32 +9,48 @@
     // The unsafe user script to run
     "userScriptFileName": "",
 
-    // max Number of created virtual users that will run simultaniously at each cycle
-    "maxConcurrentVirtualUsers": 500,
-    // 0 = contituous-No Cycles,  1 = new cycle after the last VU ends, 2=only run once
+    // Number of created virtual users that will run simultaniously at each cycle
+    "VUCount": 1000,
+    // 0 = contituous-No Cycles, 1 = new cycle after the last VU ends, 1=only run once
     "runCycleType": 0,
+    // timelap between two cycle runs
+    "cycleSleepTime": 1000,
+    // total Time system will run (not each virtual user, but the overall system run time)
+    "SystemRunTime": 600000,
 
-
-    "ControlMethods": [
+    "controlMethods": [
         {
             // These methods will run automaticlly every runPeriod miliseconds,
-            // this is usefull for logging out of time requests, or time
-            // based accounting operations
-            // if runCycleType = 1 then runPeriod = -1 will run methods at start of each cycle
+            // this is usefull for time based accounting operations & so
+            // runPeriod = -1 will run methods at each vu run
+            // runPeriod = -2 will run methods at each vu End
+            // the uniqe vu_ID will be passed as argument for -1 & -2
+            // runPeriod = -3 will run methods at each cycle Start
+            // runPeriod = -4 will run methods at each cycle End
+            // for non cycle run modes, this only applyes once on start
             "runPeriod": 60000,
             "Methods": []
         }
         //you can have multiple type of controlMethods, each group with different runPeriod
     ],
 
+    "VUoptions": {
+        //max run time for Each virtual user (miliseconds)
+        "timeout": 10000,
+        "onStart": [],     // event argument signiture: (sandboxID)
+        "onEnd": [],       // event argument signiture: (sandboxID, totalRunTime)
+        "onEndofCode": [], // event argument signiture: (sandboxID, codeRunTime)
+        "onTimeout": []   // event argument signiture: (sandboxID, remainingActiveHandlers)
+    },
+
     "requireOptions": {
 
         "useCopy": false,
         "reload": false,
         "allowExternalModules": true,
-        "onBeforeRequire": [],
-        "onRequire": [],
-        "onAfterRequire": [],
+        "onBeforeRequire": [],  // event argument signiture: (requestModule )
+        "onRequire": [],        // event argument signiture: (requestModule, filename )
+        "onAfterRequire": [],   // event argument signiture: (resultModule )
         "Blacklist": [],
         "Whitelist": [],
         "extentionList": {
@@ -48,18 +64,15 @@
 
     "requestOptions": {
 
-        "timeout": 120000,
-        "onBeforeRequest": [],
-        "onRequest": [],
-        "onResponse": [],
+        "timeout": 10000,
+        "onBeforeRequest": [],  // event argument signiture: (options, callback)
+        "onRequest": [],        // event argument signiture: (requestObj, options)
+        "onRequestError": [],   // event argument signiture: (requestObj, error)
+        "onResponse": [],       // event argument signiture: (requestObj, responseObj)
+        "onAfterResponse": [],  // event argument signiture: (requestObj, responseObj)
         "Blacklist": [],
         "Whitelist": []
-    },
-
-    "timeout": 900000,
-
-    "contextVariables": {
-        //Global Variables for userScript,
-        // Like Remainig Credit
     }
+
+
 }
