@@ -1,8 +1,8 @@
 {
   "name": "machine-engine",
-  "version": "0.4.7",
+  "version": "0.5.1",
   "description": "its the core, creates VUEngine, connects the accounting and analysis data gathering routines and runs a few thousands of UserScript on the machine",
-  "main": "index.js",
+  "main": "machine-engine.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,9 +17,7 @@
   },
   "homepage": "https://github.com/API-Load-Testing/Machine-Engine#readme",
   "dependencies": {
-    "advance-require": "^0",
-    "http-request-hook": "^0",
-    "lodash": "^4",
-    "virtual-user-engine": "^0"
+    "lodash": "^4.14.2",
+    "virtual-user-engine": "^1.0.6"
   }
 }

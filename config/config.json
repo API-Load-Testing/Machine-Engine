@@ -1,25 +1,37 @@
 {
-    "sourceFileName": "libraryTemplate.js",
-    "maxConcurrentVirtualUsers": 500,
-    "runCycleType": 0,
-
-    "requireOptions": {
-
-        "allowExternalModules": true,
-        "onBeforeRequire": [],
-        "onRequire": [],
-        "onAfterRequire": [],
-        "Blacklist": [],
-        "pathList": []
-    },
-
-    "requestOptions": {
-
-        "timeout": 30000,
-        "onBeforeRequest": [],
-        "onRequest": [],
-        "onResponse": []
-    },
-
-    "timeout": 120000
+  "child_process_count": 3,
+  "libraryFileName": "library.js",
+  "userScriptFileName": "userscript.js",
+  "VUCount": 100,
+  "runCycleType": 0,
+  "SystemRunTime": 3000,
+  "requireOptions": {
+    "allowExternalModules": true,
+    "onBeforeRequire": [],
+    "onRequire": [],
+    "onAfterRequire": [],
+    "Blacklist": [],
+    "pathList": []
+  },
+  "requestOptions": {
+    "timeout": 30000,
+    "onBeforeRequest": [],
+    "onRequest": [
+      "logRequest"
+    ],
+    "onResponse": [
+      "logResponse"
+    ]
+  },
+  "VUoptions": {
+    "timeout": 1000
+  },
+  "controlMethods": [
+    {
+      "runPeriod": 2995,
+      "Methods": [
+        "printReq"
+      ]
+    }
+  ]
 }

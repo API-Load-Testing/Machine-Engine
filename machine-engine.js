@@ -128,7 +128,7 @@ function countRemainingItems(theArray) {
     var sumRemaining = 0;
     for (var i = 0; i < theArray.length; i++)
         if (theArray[i] != 'Item Deleted') sumRemaining++;
-    
+
     return sumRemaining;
 }
 

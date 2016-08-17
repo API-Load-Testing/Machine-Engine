@@ -2,16 +2,19 @@
 // for Methods use method_Name as string, and provide the
 // method code in the library.js file
 {
+    //Number of child processes to run the app simultanusly
+    //for better performance, dont use numbers bigger than CPU-cores
+    "child_process_count": 1,
     // The js file containing the methods code
     // Methods must be Exported as module.exports
-    "sourceFileName": "",
+    "libraryFileName": "",
 
     // The unsafe user script to run
     "userScriptFileName": "",
 
     // Number of created virtual users that will run simultaniously at each cycle
     "VUCount": 1000,
-    // 0 = contituous-No Cycles, 1 = new cycle after the last VU ends, 1=only run once
+    // 0 = contituous-No Cycles, 1 = new cycle after the last VU ends, 2=only run once
     "runCycleType": 0,
     // timelap between two cycle runs
     "cycleSleepTime": 1000,

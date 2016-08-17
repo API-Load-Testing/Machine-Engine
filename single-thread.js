@@ -35,13 +35,13 @@ function addConfigFile(filename) {
 function setConfig(configs, filesPath) {
 
     var methods = {};
-    if (configs.sourceFileName) {
+    if (configs.libraryFileName) {
 
-        configs.sourceFileName = path.resolve(filesPath, configs.sourceFileName);
-        checkFileAccess(configs.sourceFileName);
-        methods = require(configs.sourceFileName);
+        configs.libraryFileName = path.resolve(filesPath, configs.libraryFileName);
+        checkFileAccess(configs.libraryFileName);
+        methods = require(configs.libraryFileName);
     }
-
+    
     if (configs.userScriptFileName) RunConfigs.userScriptFileName = path.resolve(filesPath, configs.userScriptFileName);
     if (configs.VUCount) RunConfigs.VUCount = configs.VUCount;
     if (configs.runCycleType) RunConfigs.runCycleType = configs.runCycleType;
@@ -70,7 +70,7 @@ function setConfig(configs, filesPath) {
             }
             configs.controlMethods[i].Methods.forEach(function (methodName) {
                 if (_.isFunction(methods[methodName]))
-                   RunConfigs.controlMethods[configs.controlMethods[i].runPeriod].push(methods[methodName]);
+                    RunConfigs.controlMethods[configs.controlMethods[i].runPeriod].push(methods[methodName]);
             });
         }
     }  // Control Methods
@@ -118,7 +118,7 @@ function getMethodsFromArray(methodList, methodNameList) {
 function getMethodsFromObject(methodList, methodsObject) {
 
     var res = {};
-    Object.getOwnPropertyNames(methodsObject).forEach(function(keyName) {
+    Object.getOwnPropertyNames(methodsObject).forEach(function (keyName) {
         var methodName = methodsObject[keyName];
         if (_.isFunction(methodList[methodName]))
             res.push({keyName: methodList[methodName]});
@@ -130,7 +130,7 @@ function addEventList(eventEmitterObj, eventName, methodsList) {
 
     if (Array.isArray(methodsList)) {
 
-        methodsList.forEach( function (method) {
+        methodsList.forEach(function (method) {
             eventEmitterObj.on(eventName, method);
         });
     }
@@ -177,7 +177,12 @@ function applyConfigToVUE() {
 //-------- Run From Command Line, get config files and start operation
 
 function checkFileAccess(filename) {
-    fs.accessSync(filename, fs.R_OK || fs.F_OK);
+    try {
+        fs.accessSync(filename, fs.R_OK || fs.F_OK);
+        return true;
+    } catch (err) {
+        return false;
+    }
 }
 
 // Check Exists and read-access of config files, and make the config file list
@@ -185,43 +190,21 @@ function checkFileAccess(filename) {
 function initConfigs() {
 
     if (process.argv.length > 2) {
-        // print process.argv
-        for (var i = 2; i < process.argv.length; i++) {
-            if (process.argv[i].substr(0, 3) === '--h' || process.argv[i].substr(0, 3) === '--H') {
-                console.log('****  Usage ***');
-                console.log('');
-                console.log('     node index.js --h/--help   to get the help screen ');
-                console.log('');
-                console.log('     -----------------------');
-                console.log('');
-                console.log('     node index.js  [config_File1 [config_File2 [...]]]');
-                console.log('');
-                console.log('     config_File:  the path and file name of the config file to be used');
-                console.log('                   one can use multiple config files seperated by space');
-                console.log('');
-                console.log('                   if no config file path is passed, the default config ');
-                console.log('                   file will be called ');
-                console.log('');
-                console.log('');
-                console.log('      Default Config file:  ./config/config.json');
-                console.log('      default script file:  ./config/library.js');
-                console.log('');
-                console.log('');
-            } else {
 
-                checkFileAccess(process.argv[i]);
+        for (var i = 2; i < process.argv.length; i++) {
+
+            if (checkFileAccess(process.argv[i])) {
                 addConfigFile(process.argv[i]);
-                console.log(path.resolve(process.argv[i]));
             }
         }
+    }
 
-    } else {
+    if (configFiles.length < 1) {
         //if no config file presented, the default config file will be used
         // attention on no config file available, error will throw
         checkFileAccess('./config/config.json');
         addConfigFile('./config/config.json');
     }
-
 
 // read config files
     configFiles.forEach(function (filename) {
@@ -231,11 +214,10 @@ function initConfigs() {
         setConfig(newConfigs, filesPath);
     });
 
-
     if (!_.isString(RunConfigs.userScriptFileName)) {
         throw new Error('No user-script file indicated to execute')
     }
-    checkFileAccess(RunConfigs.userScriptFileName);
+    return (checkFileAccess(RunConfigs.userScriptFileName));
 } // init Configs
 
 
@@ -247,7 +229,7 @@ function applySystemRunTimeout() {
     }
     clearTimelyMethodRunIntervals();
 
-    setTimeout(function() {
+    setTimeout(function () {
         process.exit();
     }, 1000);
 
@@ -285,12 +267,13 @@ function runMethodList(methodList) {
 function setupTimelyMethodRunIntervals() {
 
     var index = 0;
-    Object.Keys(RunConfigs.controlMethods).forEach(function (RunPeriods) {
+
+    Object.keys(RunConfigs.controlMethods).forEach(function (RunPeriods) {
 
         if (isNaN(RunPeriods)) return;
         if (Number(RunPeriods) <= 0) return;
 
-        intervalsList[index] = setInterval(runMethodList , Number(RunPeriods), RunConfigs.controlMethods[RunPeriods]);
+        intervalsList[index] = setInterval(runMethodList, Number(RunPeriods), RunConfigs.controlMethods[RunPeriods]);
         index++;
     });
 }
@@ -319,18 +302,23 @@ function startNewVU(sandboxID) {
 function runOnceVUs() {
 
     var runningVUList = {};
+    var totalStarted = 0;
+    var systemTimeoutObject;
 
     VUE.on('vmStart', function (sandboxID) {
         runningVUList[sandboxID] = 'Start';
+        totalStarted++;
     });
 
     VUE.on('vmEnd', function (sandboxID, totalRunTime) {
+        
         delete runningVUList[sandboxID];
 
         if (RunConfigs.controlMethods[-2])
             runMethodList(RunConfigs.controlMethods[-2], sandboxID);
 
-        if (runningVUList === {}) {
+        if ( (Object.keys(runningVUList).length === 0) && (totalStarted >= RunConfigs.VUCount) ) {
+            // means one full cycle executed
             clearTimeout(systemTimeoutObject);
             clearTimelyMethodRunIntervals();
         }
@@ -344,7 +332,7 @@ function runOnceVUs() {
     //
     // });
 
-    var systemTimeoutObject = setTimeout(applySystemRunTimeout, RunConfigs.SystemRunTime);
+    systemTimeoutObject = setTimeout(applySystemRunTimeout, RunConfigs.SystemRunTime);
     setupTimelyMethodRunIntervals();
 
     startNewCycle();
@@ -420,7 +408,6 @@ function continuousRunVUs() {
 
 function runContexts() {
 
-    setTimeout(applySystemRunTimeout, RunConfigs.SystemRunTime);
     // apply run policy
     switch (RunConfigs.runCycleType) {
 
@@ -445,17 +432,15 @@ function runContexts() {
 } // end of runContexts
 
 
-process.on('uncaughtException', function (err) {
-    //log('process Error', err, process.pid);
-});
-
+// process.on('uncaughtException', function (err) {
+//     //log('process Error', err, process.pid);
+// });
 
 
 // ***********  call functions to start operation
-initConfigs();
+if (!initConfigs()) return;
 applyConfigToVUE();
 createContexts();
 runContexts();
-
 
 
